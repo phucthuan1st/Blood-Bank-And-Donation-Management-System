@@ -11,42 +11,52 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-<style>
+  <style>
+    #sidebar {
+      position: relative;
+      margin-top: -20px
+    }
 
-#sidebar{position:relative;margin-top:-20px}
-#content{position:relative;margin-left:210px}
-@media screen and (max-width: 600px) {
-  #content {
-    position:relative;margin-left:auto;margin-right:auto;
-  }
-}
-</style>
+    #content {
+      position: relative;
+      margin-left: 210px
+    }
+
+    @media screen and (max-width: 600px) {
+      #content {
+        position: relative;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+  </style>
 </head>
 <?php
 include 'conn.php';
-  if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-  ?>
-<body style="color:black">
-<div id="header">
-<?php include 'header.php';
+if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
 ?>
-</div>
-<div id="sidebar">
-<?php 
-$active="";
-include 'sidebar.php'; ?>
 
-</div>
-<div id="content">
-  <div class="content-wrapper">
-    <div class="container-fluid">
+  <body style="color:black">
+    <div id="header">
+      <?php include 'header.php';
+      ?>
+    </div>
+    <div id="sidebar">
+      <?php
+      $active = "";
+      include 'sidebar.php'; ?>
 
-      <div class="row">
-        <div class="col-md-12 lg-12 sm-12">
+    </div>
+    <div id="content">
+      <div class="content-wrapper">
+        <div class="container-fluid">
 
-          <h1 class="page-title">Change Password</h1>
-        </div>
-      </div>
+          <div class="row">
+            <div class="col-md-12 lg-12 sm-12">
+
+              <h1 class="page-title">Change Password</h1>
+            </div>
+          </div>
           <div class="row">
             <div class="col-md-10">
               <div class="panel panel-default">
@@ -92,65 +102,58 @@ include 'sidebar.php'; ?>
                 </div>
               </div>
             </div>
-            </div>
+          </div>
 
-<?php
+          <?php
 
 
-if(isset($_POST["submit"])){
-  $username=$_SESSION['username'];
-  $password=mysqli_real_escape_string($conn,$_POST["currpassword"]);
-  $sql="select * from admin_info where admin_username='$username'";
-  $result=mysqli_query($conn,$sql) or die("query failed.");
-  if(mysqli_num_rows($result)>0)
-  {
-    while($row=mysqli_fetch_assoc($result)){
-      if($password==$row['admin_password']){
+          if (isset($_POST["submit"])) {
+            $username = $_SESSION['username'];
+            $password = mysqli_real_escape_string($conn, $_POST["currpassword"]);
+            $sql = "select * from admin_info where admin_username='$username'";
+            $result = mysqli_query($conn, $sql) or die("query failed.");
+            if (mysqli_num_rows($result) > 0) {
+              while ($row = mysqli_fetch_assoc($result)) {
+                if ($password == $row['admin_password']) {
 
-    $newpassword=mysqli_real_escape_string($conn,$_POST["newpassword"]);
-    $confpassword=mysqli_real_escape_string($conn,$_POST["confirmpassword"]);
+                  $newpassword = mysqli_real_escape_string($conn, $_POST["newpassword"]);
+                  $confpassword = mysqli_real_escape_string($conn, $_POST["confirmpassword"]);
 
-    if($newpassword==$confpassword)
-    {
-      if($newpassword!=$password)
-      {
-      $sql1="UPDATE admin_info set admin_password='{$newpassword}' where admin_username='{$username}'";
-      $result1=mysqli_query($conn,$sql1) or die("query failed.");
-      echo '<div class="alert alert-success alert_dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button><b> Password Changed Successfully.</b></div>';
-      }
-      else {
-          echo  '<div class="alert alert-info alert_dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button><b>New Password Can not be same as Current Password..</b></div>';
+                  if ($newpassword == $confpassword) {
+                    if ($newpassword != $password) {
+                      $sql1 = "UPDATE admin_info set admin_password='{$newpassword}' where admin_username='{$username}'";
+                      $result1 = mysqli_query($conn, $sql1) or die("query failed.");
+                      echo '<div class="alert alert-success alert_dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button><b> Password Changed Successfully.</b></div>';
+                    } else {
+                      echo  '<div class="alert alert-info alert_dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button><b>New Password Can not be same as Current Password..</b></div>';
+                    }
+                  } else {
+                    echo '<div class="alert alert-warning alert_dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button> <b>New Password and Confirm Password Not Matched!</b></div>';
+                  }
+                } else {
+                  echo '<div class="alert alert-danger alert_dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button><b> Current Password not matched!</b></div>';
+                }
+              }
+            }
           }
-      }
+          ?>
+        <?php
+      } else {
+        echo '<div class="alert alert-danger"><b> Please Login First To Access Admin Portal.</b></div>';
+        ?>
+          <form method="post" name="" action="login.php" class="form-horizontal">
+            <div class="form-group">
+              <div class="col-sm-8 col-sm-offset-4" style="float:left">
 
-      else {
-        echo '<div class="alert alert-warning alert_dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button> <b>New Password and Confirm Password Not Matched!</b></div>';
-      }
-    }
-  else {
-    echo '<div class="alert alert-danger alert_dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button><b> Current Password not matched!</b></div>';
-  }
-}
-}
-}
-?>
-<?php
-}
-else {
-    echo '<div class="alert alert-danger"><b> Please Login First To Access Admin Portal.</b></div>';
-    ?>
-    <form method="post" name="" action="login.php" class="form-horizontal">
-      <div class="form-group">
-        <div class="col-sm-8 col-sm-offset-4" style="float:left">
-
-          <button class="btn btn-primary" name="submit" type="submit">Go to Login Page</button>
+                <button class="btn btn-primary" name="submit" type="submit">Go to Login Page</button>
+              </div>
+            </div>
+          </form>
+        <?php }
+        ?>
         </div>
       </div>
-    </form>
-<?php }
- ?>
-</div>
-</div>
-</div>
-</body>
+    </div>
+  </body>
+
 </html>
