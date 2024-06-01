@@ -4,10 +4,9 @@ on:
     push:
         branches:
             - main
-            - master
 
 jobs:
-    deploy:
+    system-check:
         runs-on: ubuntu-latest
 
         steps:
@@ -25,6 +24,17 @@ jobs:
                       command -v apache2 > /dev/null || { echo "Apache2 is not installed"; exit 1; }
                       systemctl is-active --quiet apache2 || { echo "Apache2 is not running"; exit 1; }
 
+    copy-code:
+        runs-on: ubuntu-latest
+        needs: system-check
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Remove sql folder
+              run: rm -rf ./sql
+
             - name: Copy code to remote server
               uses: appleboy/scp-action@master
               with:
@@ -33,6 +43,14 @@ jobs:
                   host: ${{ secrets.SSH_HOST }}
                   username: ${{ secrets.SSH_USER }}
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    deploy-code:
+        runs-on: ubuntu-latest
+        needs: copy-code
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
 
             - name: Deploy code to /var/www/html
               uses: appleboy/ssh-action@master
@@ -46,6 +64,14 @@ jobs:
                       sudo find /var/www/html/ -type d -exec chmod 755 {} \;
                       sudo find /var/www/html/ -type f -exec chmod 644 {} \;
 
+    restart-apache:
+        runs-on: ubuntu-latest
+        needs: deploy-code
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
             - name: Restart apache2 service on remote server
               uses: appleboy/ssh-action@master
               with:
@@ -53,6 +79,14 @@ jobs:
                   username: ${{ secrets.SSH_USER }}
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   script: sudo systemctl restart apache2
+
+    confirm-deployment:
+        runs-on: ubuntu-latest
+        needs: restart-apache
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
 
             - name: Confirm deployment
               uses: appleboy/ssh-action@master
