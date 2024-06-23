@@ -81,6 +81,7 @@ jobs:
                   host: ${{ secrets.SSH_HOST }}
                   username: ${{ secrets.SSH_USER }}
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  
             - name: Remove unnecessary files and folder
               uses: appleboy/ssh-action@master
               with:
@@ -88,10 +89,11 @@ jobs:
                   username: ${{ secrets.SSH_USER }}
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   script: |
-                   sudo rm -rf /var/www/html/sql/
-                   sudo rm -rf /var/www/html/.git/
-                   sudo rm -rf /var/www/html/.github/
-                   sudo rm -rf /var/www/html.gitignores/
+                   sudo rm -rf /tmp/deploy/sql/
+                   sudo rm -rf /tmp/deploy/.git/
+                   sudo rm -rf /tmp/deploy/.github/
+                   sudo rm -rf /tmp/deploy/.gitignores
+                   ls /tmp/deploy/
 
     deploy-code:
         runs-on: ubuntu-latest
@@ -119,7 +121,8 @@ jobs:
                    sudo rm -rf /var/www/html/sql/
                    sudo rm -rf /var/www/html/.git/
                    sudo rm -rf /var/www/html/.github/
-                   sudo rm -rf /var/www/html.gitignores/
+                   sudo rm -rf /var/www/html/.gitignores
+                   ls /var/www/html
 
     restart-apache:
         runs-on: ubuntu-latest
