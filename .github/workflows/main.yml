@@ -81,6 +81,17 @@ jobs:
                   host: ${{ secrets.SSH_HOST }}
                   username: ${{ secrets.SSH_USER }}
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
+            - name: Remove unnecessary files and folder
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.SSH_HOST }}
+                  username: ${{ secrets.SSH_USER }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  script: |
+                   sudo rm -rf /var/www/html/sql/
+                   sudo rm -rf /var/www/html/.git/
+                   sudo rm -rf /var/www/html/.github/
+                   sudo rm -rf /var/www/html.gitignores/
 
     deploy-code:
         runs-on: ubuntu-latest
@@ -98,6 +109,17 @@ jobs:
                       sudo chown -R www-data:www-data /var/www/html/
                       sudo find /var/www/html/ -type d -exec chmod 755 {} \;
                       sudo find /var/www/html/ -type f -exec chmod 644 {} \;
+            - name: Remove unnecessary files and folder
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.SSH_HOST }}
+                  username: ${{ secrets.SSH_USER }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  script: |
+                   sudo rm -rf /var/www/html/sql/
+                   sudo rm -rf /var/www/html/.git/
+                   sudo rm -rf /var/www/html/.github/
+                   sudo rm -rf /var/www/html.gitignores/
 
     restart-apache:
         runs-on: ubuntu-latest
@@ -111,18 +133,6 @@ jobs:
                   username: ${{ secrets.SSH_USER }}
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   script: sudo systemctl restart apache2
-
-            - name: Remove unnecessary files and folder
-              uses: appleboy/ssh-action@master
-              with:
-                  host: ${{ secrets.SSH_HOST }}
-                  username: ${{ secrets.SSH_USER }}
-                  key: ${{ secrets.SSH_PRIVATE_KEY }}
-                  script: |
-                   sudo rm -rf /var/www/html/sql/
-                   sudo rm -rf /var/www/html/.git/
-                   sudo rm -rf /var/www/html/.github/
-                   sudo rm -rf /var/www/html.gitignores/
 
     confirm-deployment:
         runs-on: ubuntu-latest
