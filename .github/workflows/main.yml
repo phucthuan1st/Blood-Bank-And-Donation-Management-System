@@ -76,6 +76,12 @@ jobs:
             - name: Remove sql folder
               run: rm -rf ./sql
 
+            - name: Remove .git folder
+              run: |
+                   rm -rf ./.git
+                   rm -rf ./.github
+                   rm -rf .gitignores
+
             - name: Copy code to remote server
               uses: appleboy/scp-action@master
               with:
