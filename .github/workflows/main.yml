@@ -11,9 +11,6 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-
             - name: Perform system check on remote server
               uses: appleboy/ssh-action@master
               with:
@@ -53,9 +50,6 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-
             - name: Check if database is reachable
               uses: appleboy/ssh-action@master
               with:
@@ -96,9 +90,6 @@ jobs:
         needs: copy-code
 
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-
             - name: Deploy code to /var/www/html
               uses: appleboy/ssh-action@master
               with:
@@ -116,9 +107,6 @@ jobs:
         needs: deploy-code
 
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-
             - name: Restart apache2 service on remote server
               uses: appleboy/ssh-action@master
               with:
@@ -132,9 +120,6 @@ jobs:
         needs: restart-apache
 
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-
             - name: Confirm deployment
               uses: appleboy/ssh-action@master
               with:
