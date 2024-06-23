@@ -1,4 +1,4 @@
-name: Deploy PHP App
+name: Deploy Blood-Bank-And-Donation-Management-System
 
 on:
     push:
@@ -24,6 +24,31 @@ jobs:
                       command -v php > /dev/null || { echo "PHP is not installed"; exit 1; }
                       command -v apache2 > /dev/null || { echo "Apache2 is not installed"; exit 1; }
                       systemctl is-active --quiet apache2 || { echo "Apache2 is not running"; exit 1; }
+                      
+                      echo "Check if UFW is active..."
+                      if sudo ufw status | grep -q "Status: active"; then
+                        echo "UFW is active"
+                      else
+                        echo "UFW is not active"
+                        exit 1
+                      fi
+                      
+                      echo "Check if the domain blood.nguyenphucthuan.id.vn is reachable and has SSL enabled..."
+                      if curl -Is https://blood.nguyenphucthuan.id.vn | grep -q "200 OK"; then
+                        echo "Domain is reachable and SSL is enabled"
+                      else
+                        echo "Domain is not reachable or SSL is not enabled"
+                        exit 1
+                      fi
+                      
+                      echo "Check disk space usage..."
+                      if df -h | grep '^/dev/' | awk '{ if ($5+0 > 80) exit 1 }'; then
+                        echo "Disk space usage is within limits"
+                      else
+                        echo "Disk space usage is too high"
+                        exit 1
+                      fi
+                      echo "All infrastructure checks passed successfully."
 
     copy-code:
         runs-on: ubuntu-latest
