@@ -73,13 +73,6 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v2
 
-            - name: Remove useless folder and folder
-              run: |
-                   sudo rm -rf ./sql
-                   sudo rm -rf ./.git
-                   sudo rm -rf ./.github
-                   sudo rm -rf .gitignores
-
             - name: Copy code to remote server
               uses: appleboy/scp-action@master
               with:
@@ -118,6 +111,18 @@ jobs:
                   username: ${{ secrets.SSH_USER }}
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   script: sudo systemctl restart apache2
+
+            - name: Remove unnecessary files and folder
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.SSH_HOST }}
+                  username: ${{ secrets.SSH_USER }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  script: |
+                   sudo rm -rf /var/www/html/sql/
+                   sudo rm -rf /var/www/html/.git/
+                   sudo rm -rf /var/www/html/.github/
+                   sudo rm -rf /var/www/html.gitignores/
 
     confirm-deployment:
         runs-on: ubuntu-latest
